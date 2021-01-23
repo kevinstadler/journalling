@@ -78,14 +78,14 @@ with open(gsfile, 'w') as f:
     return r
 
   hd = .22 # half diameter -- first print was .225
-  def box(x, y):
-    r = [ line(x + .5 - hd, y + .5 - hd, w=2*hd), line(x + .5 - hd, y + .5 - hd, h=2*hd), line(x + .5 + hd, y + .5 - hd, h=2*hd), line(x + .5 - hd, y + .5 + hd, w=2*hd) ]
+  def box(x, y, s = 1):
+    r = [ line(x + .5 - s*hd, y + .5 - s*hd, w=2*s*hd), line(x + .5 - s*hd, y + .5 - s*hd, h=2*s*hd), line(x + .5 + s*hd, y + .5 - s*hd, h=2*s*hd), line(x + .5 - s*hd, y + .5 + s*hd, w=2*s*hd) ]
     for s in r:
       f.write(s)
     return r
 
-  def grid(x, y, dx, dy, offsets = []):
-    return None # TODO
+#  def grid(x, y, dx, dy, offsets = []):
+#    return None # TODO
 
   def hook(x, y, w): # a bottom right hook/box -- the y is one less to correspond to text
     r = [ line(x+w, y-1, h=1), line(x, y, w=w) ]
@@ -187,7 +187,8 @@ with open(gsfile, 'w') as f:
     # lines
     postscript = postscript + [ line(0, 2*i, w=5.5) for i in range(5) ] + [ line(5, 0, h=10) ]
     postscript = postscript + [ mtext(2.5, 2, 'why do you\nfeel like that?'), mtext(2.5, 4, 'what can you do to\nhave more energy?'), mtext(2.5, 6, 'how do you define\na successful day?'), mtext(2.5, 8, 'what project to\nfocus on and why?'), mtext(2.5, 10, 'how can you\nmake a dent?') ]
-    postscript = postscript + [ text(1.5, npoints[1] - 2, 'success?', center=True), text(3, npoints[1] - 2, 'what excited you today?'), text(3, npoints[1] - 1, 'what drained you of energy?'), text(3, npoints[1], 'what did you learn?') ]
+    postscript = postscript + [ text(1.5, npoints[1] - 2, '___ : ___', center=True), text(3, npoints[1] - 2, 'what excited you today?'), text(3, npoints[1] - 1, 'what drained you of energy?'), text(3, npoints[1], 'what did you learn?') ]
+    postscript = postscript + box(1, npoints[1] - 1.75, 3.5)
 
     # box
     postscript = postscript + [ line(npoints[0] - 4, 0, w=4), line(npoints[0] - 4, 0, h=4), line(npoints[0], 4, w=-4), line(npoints[0], 4, h=-4) ]
@@ -211,8 +212,8 @@ with open(gsfile, 'w') as f:
     # review section
     postscript = postscript + [ line(0, npoints[1] - 3, w=npoints[0]), line(3, npoints[1] - 3, h=3) ]
 
-    f.write(f' showpage {args.binding - args.margin[0]} 0 translate {" ".join(postscript)} showpage')
-    postscript = postscript + [ f' showpage {args.binding - args.margin[0]} 0 translate ' ] + postscript + [ ' showpage ' ]
+    f.write(f' showpage {args.binding - args.margin[0]/2} 0 translate {" ".join(postscript)} showpage')
+    postscript = postscript + [ f' showpage {args.binding - args.margin[0]/2} 0 translate ' ] + postscript + [ ' showpage ' ]
 #if isnamedsize: # FIXME does not work for 'landscape' sizes
 #  gsspec = '-sPAPERSIZE=' + args.paper
 #else:
