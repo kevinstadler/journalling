@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='generate boxes of similar colors')
 
 parser.add_argument('-paper', default='180mmx257mm', help='paper size (named size or couple)')
 parser.add_argument('-landscape', default=False, action='store_true')
-parser.add_argument('-margin', default='5mmx9mm', help='non-printable margin (length couple)')
+parser.add_argument('-margin', default='5mmx7mm', help='non-printable margin (length couple)') # was 5x7 (skipped bottom dot on print)
 parser.add_argument('-binding', default='9mm', help='binding margin')
 parser.add_argument('-dots', default=.5, help='grayscale intensity of the dot grid from 0 (black) to 1 (white)')
 parser.add_argument('-grid', default='5mm', help='grid distance')
@@ -187,8 +187,6 @@ with open(gsfile, 'w') as f:
     # lines
     postscript = postscript + [ line(0, 2*i, w=5.5) for i in range(5) ] + [ line(5, 0, h=10) ]
     postscript = postscript + [ mtext(2.5, 2, 'why do you\nfeel like that?'), mtext(2.5, 4, 'what can you do to\nhave more energy?'), mtext(2.5, 6, 'how do you define\na successful day?'), mtext(2.5, 8, 'what project to\nfocus on and why?'), mtext(2.5, 10, 'how can you\nmake a dent?') ]
-    postscript = postscript + [ text(1.5, npoints[1] - 2, '___ : ___', center=True), text(3, npoints[1] - 2, 'what excited you today?'), text(3, npoints[1] - 1, 'what drained you of energy?'), text(3, npoints[1], 'what did you learn?') ]
-    postscript = postscript + box(1, npoints[1] - 1.75, 3.5)
 
     # box
     postscript = postscript + [ line(npoints[0] - 4, 0, w=4), line(npoints[0] - 4, 0, h=4), line(npoints[0], 4, w=-4), line(npoints[0], 4, h=-4) ]
@@ -207,10 +205,14 @@ with open(gsfile, 'w') as f:
     postscript = postscript + hook(0, 11, 2.5) + hook(fourths[1], 11, 2.5) + hook(fourths[2], 11, 3.75)
 
     # day
-    postscript = postscript + [ line(fourths[1], 20, h=npoints[1] - 23, dash=True) ]
+    postscript = postscript + [ line(2, 20, h=npoints[1] - 23, dash=True) ] # 'time blocking' line
+    postscript = postscript + [ line(fourths[1], 20, h=npoints[1] - 23, dash=True) ] # middle line
     postscript = postscript + [ text(0, 21 + 2*i, args.daily + i, center = True) for i in range(floor((npoints[1] - 23) / 2)) ]
     # review section
     postscript = postscript + [ line(0, npoints[1] - 3, w=npoints[0]), line(3, npoints[1] - 3, h=3) ]
+    postscript = postscript + [ text(1.5, npoints[1] - 2, '___ : ___', center=True), text(3, npoints[1] - 2, 'what excited you today?'), text(3, npoints[1] - 1, 'what drained you of energy?'), text(3, npoints[1], 'what did you learn?') ]
+    postscript = postscript + box(-.5, npoints[1] - 2) + [ text(.2, npoints[1] - 1, 'success?', 7) ]
+    postscript = postscript + box(-.5, npoints[1] - 1) + [ text(.2, npoints[1], 'tidy tasks', 7) ]
 
     f.write(f' showpage {args.binding - args.margin[0]/2} 0 translate {" ".join(postscript)} showpage')
     postscript = postscript + [ f' showpage {args.binding - args.margin[0]/2} 0 translate ' ] + postscript + [ ' showpage ' ]
