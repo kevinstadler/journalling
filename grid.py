@@ -8,10 +8,10 @@ parser = argparse.ArgumentParser(description='calculate a grid.')
 #./grid.py -nx 4 -ny 3 -element 51 -margin 10
 #./grid.py -nx 3 -ny 2 -element 70 -margin 18
 
-parser.add_argument('-x', type=float, default=320)
-parser.add_argument('-y', type=float, default=180)
-parser.add_argument('-nx', type=int, default=4)
-parser.add_argument('-ny', type=int, default=3)
+parser.add_argument('-x', type=float, default=320, help='page width')
+parser.add_argument('-y', type=float, default=180, help='page height')
+parser.add_argument('-nx', type=int, default=4, help='number of grid columns')
+parser.add_argument('-ny', type=int, default=3, help='number of grid rows')
 
 parser.add_argument('-fix', choices=['x', 'y'], default='y', help='-margin and -element fix the lengths along this axis')
 parser.add_argument('-margin', type=float, default=10)
