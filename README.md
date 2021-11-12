@@ -2,6 +2,12 @@
 
 default paper size (`180mmx257mm`) is JIS B5, a common format for lose-leaf binders/notebooks
 
+* some 26 hole B5: 173x251
+* Senmu 'B5' notebook: 173x253
+* ISO B5: 176x250
+* Benmu 'B5' 18K080-0913B(A): 178x254mm
+* rounded-corner Daolian: 180x256
+* JIS B5: 182x257
 
 ### example usage
 
