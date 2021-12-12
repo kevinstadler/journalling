@@ -146,6 +146,7 @@ with open(gsfile, 'w') as f:
 
   thirds = [ ceil((i + 1) * npoints[0] / 3) for i in range(2) ]
   fourths = [ round((i + 1) * npoints[0] / 4) for i in range(3) ]
+  eighths = [ ceil((i + 1) * npoints[0] / 8) for i in range(7) ]
 
   from datetime import datetime
   now = datetime.now()
@@ -205,11 +206,18 @@ with open(gsfile, 'w') as f:
     postscript = [ f'{args.binding - args.margin[0]/2} 0 translate ' ] + postscript
 
     # week
-    postscript = postscript + [ line(0, 4 * (i+1) - 1, npoints[0]) for i in range(3) ]
-    postscript = postscript + [ line(thirds[0], 3, h=8), line(thirds[1], -1, h=12) ]
-    zthirds = [0] + thirds
-    postscript = postscript + [ text(zthirds[(i + 2) % 3], 4*floor((i+2) / 3), letter) for i, letter in enumerate(weekdays) ]
-    postscript = postscript + [ h for hooks in [ hook(zthirds[(i + 2) % 3], 4*floor((i+2) / 3), 3) for i in range(len(weekdays)) ] for h in hooks ]
+    if True:
+        postscript = postscript + [ line(x, -1, h=12) for x in eighths ]
+        postscript = postscript + [ line(eighths[0], 0, npoints[0]-eighths[0]) ]
+        postscript = postscript + [ text(eighths[i], 0, letter) for i, letter in enumerate(weekdays) ]
+        postscript = postscript + [ line(0, 11, npoints[0]) ]
+        postscript = postscript + [ line(0, 12, 7) ]
+    else: # old style
+        postscript = postscript + [ line(0, 4 * (i+1) - 1, npoints[0]) for i in range(3) ]
+        postscript = postscript + [ line(thirds[0], 3, h=8), line(thirds[1], -1, h=12) ]
+        zthirds = [0] + thirds
+        postscript = postscript + [ text(zthirds[(i + 2) % 3], 4*floor((i+2) / 3), letter) for i, letter in enumerate(weekdays) ]
+        postscript = postscript + [ h for hooks in [ hook(zthirds[(i + 2) % 3], 4*floor((i+2) / 3), 3) for i in range(len(weekdays)) ] for h in hooks ]
     # tasks
     postscript = postscript + [ text(i + .5, 12, letter, 6, center = True) for i, letter in enumerate(weekdays) ]
   #  postscript = postscript + [ text(i + .5, 12, ']', 6, center = True, rotate=90) for i in range(7) ]
@@ -271,16 +279,21 @@ with open(gsfile, 'w') as f:
     postscript = postscript + [ text(npoints[0] - 4.2, 4.25 - i, '' if i == 2 else 2*i + 1, 4, True) for i in range(5) ]
 
     # horizontal separator lines
-    postscript = postscript + [ line(0, 10 + 10*i, w=npoints[0]) for i in range(2) ]
+    postscript = postscript + [ line(0, 10, w=npoints[0]) ] # top line
+    postscript = postscript + [ line(0, 10+9, w=npoints[0]) ] # food line
+    postscript = postscript + [ line(0, 10+10, w=npoints[0]) ] # bottom line
     # tasks
     postscript = postscript + [ line(x, 10, h=10, dash = i != 2) for i, x in enumerate(thirds) ]
     postscript = postscript + [ text(0, 11, 'TASKS', 7), text(thirds[1], 11, 'SHORT/MSG/SOCIAL', 7) ]
     postscript = postscript + hook(0, 11, 2.5) + hook(thirds[1], 11, 5.5)
-
     # day
-    postscript = postscript + [ line(2, 20, h=npoints[1] - 25, dash=True) ] # 'time blocking' line
-    postscript = postscript + [ line(fourths[1], 20, h=npoints[1] - 25, dash=True) ] # middle line
+    postscript = postscript + [ line(2, 20, h=npoints[1] - 26, dash=False) ] # 'time blocking' line
+    postscript = postscript + [ line(fourths[1], 20, h=npoints[1] - 26, dash=True) ] # middle line
     postscript = postscript + [ text(0, 21 + 2*i, args.daily + i, center = True) for i in range(ceil((npoints[1] - 25) / 2)) ]
+    # check-in goal
+    postscript = postscript + [ line(0, npoints[1] - 6, w=npoints[0]) ]
+    postscript = postscript + [ text(1, npoints[1] - 5, 'check-in:', center=True) ]
+
     postscript = postscript + [ 'grestore' ]
 
 #    f.write(f' showpage {args.binding - args.margin[0]/2} 0 translate {" ".join(postscript)} showpage')
