@@ -9,6 +9,12 @@ default paper size (`180mmx257mm`) is JIS B5, a common format for lose-leaf bind
 * rounded-corner Daolian: 180x256
 * JIS B5: 182x257
 
+### dependencies
+
+```
+pip3 install papersize
+```
+
 ### example usage
 
 generate a daily page, starting at 8 am (this prints a double page, left then right): `./journal.py -daily 8 daily.pdf`
