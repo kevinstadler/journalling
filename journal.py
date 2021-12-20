@@ -203,7 +203,7 @@ with open(gsfile, 'w') as f:
   elif args.weekly:
     print('Printing weekly')
     # put binding margin on left instead
-    postscript = [ f'{args.binding - args.margin[0]/2} 0 translate ' ] + postscript
+    #postscript = [ f'{args.binding - args.margin[0]/2} 0 translate ' ] + postscript
 
     # week
     if True:
