@@ -248,9 +248,10 @@ with open(gsfile, 'w') as f:
     # review section
     postscript = postscript + [ line(0, 4, w=npoints[0]), line(3, -1, h=5), line(0, 0, w=3) ]
     preview = ['what excited me today?', 'what drained me of energy?', 'what did I learn?', 'how did I push the needle forward?', "tomorrow's FROG:" ]
-    postscript = postscript + [ text(1.5, 0, 'REVIEW', 7, center=True), text(1.5, 1, '___ : ___', center=True) ] + [ text(3, i, t) for i, t in enumerate(preview) ]
-    postscript = postscript + box(-.5, 1) + [ text(.2, 2, 'success?', 7) ]
-    postscript = postscript + box(-.5, 2) + [ text(.2, 3, 'tidy tasks', 7) ]
+    postscript = postscript + [ text(1.5, 0, '21 : ___', center=True) ] + [ text(3, i, t) for i, t in enumerate(preview) ]
+    # + [ text(1.5, 0, 'REVIEW', 7, center=True)
+    reviewtasks = ['success?', 'tidy vit', 'log exist', 'lights out']
+    postscript = postscript + [ b for i in range(len(reviewtasks)) for b in box(-.5, i) ] + [ text(.2, 1+i, t, 7) for i, t in enumerate(reviewtasks) ]
 
     # shift down
     postscript = postscript + [ f'gsave 0 {-5*args.grid} translate' ]
@@ -262,7 +263,7 @@ with open(gsfile, 'w') as f:
     # box
     postscript = postscript + [ line(npoints[0] - 4, 0, w=4), line(npoints[0] - 4, 0, h=4), line(npoints[0], 4, w=-4), line(npoints[0], 4, h=-4) ]
     postscript = postscript + [ line(npoints[0] - 4, 2, w=4, dash=True), line(npoints[0] - 2, 0, h=4, dash=True) ]
-    postscript = postscript + [ text(npoints[0] - 2, 4.5, 'energy', 6, True), text(npoints[0] - 3.6, 2.65, 'focus', 6, True, 90) ]
+    postscript = postscript + [ text(npoints[0] - 2, 4.55, 'energy', 6, True), text(npoints[0] - 3.6, 2.65, 'focus', 6, True, 90) ]
     # horizontal
     postscript = postscript + [ text(npoints[0] - 4 + i, 4.45, '' if i == 2 else 2*i + 1, 4, True) for i in range(5) ]
     # vertical
@@ -270,19 +271,23 @@ with open(gsfile, 'w') as f:
 
     # horizontal separator lines
     postscript = postscript + [ line(0, 10, w=npoints[0]) ] # top line
-    postscript = postscript + [ line(0, 10+9, w=npoints[0]) ] # food line
-    postscript = postscript + [ line(0, 10+10, w=npoints[0]) ] # bottom line
+    # food
+    allthirds = [0] + thirds
+    postscript = postscript + [ text(allthirds[i], 11, t) for i, t in enumerate(['B:', 'L:', 'D:']) ]
+    # TODO add boxes
+
     # tasks
-    postscript = postscript + [ line(x, 10, h=10, dash = i != 2) for i, x in enumerate(thirds) ]
-    postscript = postscript + [ text(0, 11, 'TASKS', 7), text(thirds[1], 11, 'SHORT/MSG/SOCIAL', 7) ]
-    postscript = postscript + hook(0, 11, 2.5) + hook(thirds[1], 11, 5.5)
+    tasktypes = ['check in/catch up', 'research', 'deep work', 'physical work']
+    postscript = postscript + [ text(0, 12+8*i, t, 7) for i, t in enumerate(tasktypes) ]
+    postscript = postscript + [ h for i in range(len(tasktypes)) for h in [line(0, 11+8*i, w=npoints[0] if i == 0 else thirds[0])] + hook(0, 12+8*i, 5 if i == 0 else 3.5) ]
+
     # day
-    postscript = postscript + [ line(2, 20, h=npoints[1] - 26, dash=False) ] # 'time blocking' line
-    postscript = postscript + [ line(fourths[1], 20, h=npoints[1] - 26, dash=True) ] # middle line
-    postscript = postscript + [ text(0, 21 + 2*i, args.daily + i, center = True) for i in range(ceil((npoints[1] - 25) / 2)) ]
+    postscript = postscript + [ line(thirds[0], 10, h=npoints[1] - 16, dash=False) ] # vertical line
+    postscript = postscript + [ line(thirds[1], 10, h=npoints[1] - 16, dash=True) ]
+    postscript = postscript + [ text(thirds[0]+1, 12 + 3*i, args.daily + i, center = True) for i in range(ceil((npoints[1] - 27) / 2)) ]
     # check-in goal
     postscript = postscript + [ line(0, npoints[1] - 6, w=npoints[0]) ]
-    postscript = postscript + [ text(1, npoints[1] - 5, 'check-in:', center=True) ]
+    postscript = postscript + [ text(1, npoints[1] - 5, 'curfew:', center=True) ]
 
     postscript = postscript + [ 'grestore' ]
 
