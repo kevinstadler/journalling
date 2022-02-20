@@ -80,14 +80,14 @@ with open(gsfile, 'w') as f:
     # simple: http://paulbourke.net/dataformats/postscript/
     # full: https://www.adobe.com/content/dam/acom/en/devnet/actionscript/articles/psrefman.pdf
     r = f' newpath {getx(x)} {gety(y)} moveto {getx(x+w)} {gety(y+h)} lineto {f"[{d}] {d/2} setdash" if dash else "[ ] 0 setdash"} {args.line/2 if dash else args.line} setlinewidth {args.gray} setgray stroke '
-    f.write(r)
+#    f.write(r)
     return r
 
   hd = .22 # half diameter -- first print was .225
   def box(x, y, s = 1):
     r = [ line(x + .5 - s*hd, y + .5 - s*hd, w=2*s*hd), line(x + .5 - s*hd, y + .5 - s*hd, h=2*s*hd), line(x + .5 + s*hd, y + .5 - s*hd, h=2*s*hd), line(x + .5 - s*hd, y + .5 + s*hd, w=2*s*hd) ]
-    for s in r:
-      f.write(s)
+#    for s in r:
+#      f.write(s)
     return r
 
 #  def grid(x, y, dx, dy, offsets = []):
@@ -111,7 +111,7 @@ with open(gsfile, 'w') as f:
       ps = ps + f' gsave {rotate} rotate show grestore '
     else:
       ps = ps + ' show '
-    f.write(ps)
+#    f.write(ps)
     return ps
 
   # always centered (on both axes)
@@ -130,7 +130,7 @@ with open(gsfile, 'w') as f:
   npoints = [ floor((size[0] - args.margin[0] - args.binding - .000001) / args.grid), floor((size[1] - args.margin[1] - .000001) / args.grid) ]
 
   if args.rightpage and not args.daily:
-    f.write(f' {args.binding - args.margin[0]/2} 0 translate ')
+    postscript = postscript + [f' {args.binding - args.margin[0]/2} 0 translate ']
 
   if args.dots > 0:
     print(f'Printing {npoints[0]}x{npoints[1]} grid')
@@ -142,7 +142,7 @@ with open(gsfile, 'w') as f:
     xs = [ getx(i) for i in range(npoints[0] + 1) ]
     ys = [ gety(i) for i in range(npoints[1] + 1) ]
     postscript = postscript + [ f'{x} {y} .5 0 360 arc closepath {args.gridgray} setgray fill' for x, y in [[x, y] for y in ys for x in xs ] ]
-    f.write(' '.join(postscript))
+    #f.write(' '.join(postscript))
 
   thirds = [ ceil((i + 1) * npoints[0] / 3) for i in range(2) ]
   fourths = [ round((i + 1) * npoints[0] / 4) for i in range(3) ]
@@ -157,48 +157,33 @@ with open(gsfile, 'w') as f:
   weekdays = [x[0] for x in calendar.day_name]
 
   if args.yearly:
-    text(0, 1, args.year, 16)
-    hook(0, 1, 3)
-    for m in range(1, 13):
-      text(m-.5 + (m > 6)*(ceil(npoints[0]/2) - 6), 2, calendar.month_name[m][0], center=True)
-    line(6, 1, h=npoints[1]-1, dash=True)
-    text(6, 2, 'goals/sub-goals/dates')
-    line(17, 1, h=npoints[1]-1)
-    line(23, 1, h=npoints[1]-1, dash=True)
-    text(23, 2, 'goals/sub-goals/dates')
-    line(0, 2, w=npoints[0])
+    postscript = postscript + [ text(0, 1.4, args.year, 16), text(17.5, 1, 'Specific / Measurable / Achievable / Relevant / Time-bound') ] +  hook(0, 1, 3)
+    postscript = postscript + [ text(m-.5 + (m > 6)*(ceil(npoints[0]/2) - 6), 2, calendar.month_name[m][0], center=True) for m in range(1, 13) ]
+    postscript = postscript + [ line(6, 1, h=npoints[1]-1, dash=True), text(6, 2, 'goals/sub-goals/dates'), line(17, 1, h=npoints[1]-1), line(23, 1, h=npoints[1]-1, dash=True), text(23, 2, 'goals/sub-goals/dates'), line(0, 2, w=npoints[0]) ]
     # put in quarter lines to space out goals/projects
-    line(0, ceil(npoints[1]/2)+1, w=npoints[0], dash=True)
+    postscript = postscript + [ line(0, ceil(npoints[1]/2)+1, w=npoints[0], dash=True) ]
     # put 8 rows per month??
-    line(5.5, 10, w=1, dash=True)
-    line(22.5, 10, w=1, dash=True)
-    line(5.5, 18, w=1, dash=True)
-    line(22.5, 18, w=1, dash=True)
-    line(5.5, 34, w=1, dash=True)
-    line(22.5, 34, w=1, dash=True)
-    line(5.5, 42, w=1, dash=True)
-    line(22.5, 42, w=1, dash=True)
+    postscript = postscript + [ line(5.5, 10, w=1, dash=True) ]
+    postscript = postscript + [line(22.5, 10, w=1, dash=True)]
+    postscript = postscript + [line(5.5, 18, w=1, dash=True)]
+    postscript = postscript + [line(22.5, 18, w=1, dash=True)]
+    postscript = postscript + [line(5.5, 34, w=1, dash=True)]
+    postscript = postscript + [line(22.5, 34, w=1, dash=True)]
+    postscript = postscript + [line(5.5, 42, w=1, dash=True)]
+    postscript = postscript + [line(22.5, 42, w=1, dash=True)]
 
   elif args.future:
     print(123)
   elif args.monthly:
-    text(0, .6, f'{calendar.month_name[args.monthly].upper()} {args.year}', 12)
-    hook(0, .5, len(calendar.month_name[args.monthly]) + 1.5)
+    postscript = postscript + [ text(0, .6, f'{calendar.month_name[args.monthly].upper()} {args.year}', 12) ] + hook(0, .5, len(calendar.month_name[args.monthly]) + 1.5)
     firstday, ndays = calendar.monthrange(args.year, args.monthly)
-    line(-.5, 2, w=13.5)
-    line(2, 1, h=ndays+1)
-    text(3.5, 2, 'events', center=True)
-    line(5, 1, h=ndays+1)
-    text(9, 2, 'todos', center=True)
-    line(13, 1, h=ndays+1)
+    postscript = postscript + [ line(-.5, 2, w=13.5), line(2, 1, h=ndays+1), text(3.5, 2, 'events', center=True), line(5, 1, h=ndays+1), text(9, 2, 'todos', center=True), line(13, 1, h=ndays+1) ]
     for i in range(1, ndays+1):
-      text(.5, 2 + i, i, center=True)
-      text(1.5, 2 + i, weekdays[(firstday + i) % 7], center=True)
+      postscript = postscript + [ text(.5, 2 + i, i, center=True), text(1.5, 2 + i, weekdays[(firstday + i) % 7], center=True) ]
       if (firstday + i) % 7 == 6:
-        line(-.5, 2 + i, w=13.5)
+        postscript = postscript + [ line(-.5, 2 + i, w=13.5) ]
 
-    text(13, 2, 'GOALS')
-    hook(13, 2, 2.5)
+    postscript = postscript + [ text(13, 2, 'GOALS') ] + hook(13, 2, 2.5)
 
   elif args.weekly:
     print('Printing weekly')
@@ -207,9 +192,10 @@ with open(gsfile, 'w') as f:
 
     # week
     if True:
+        themes = ['', '', '', '', '', ' (rest day)', ' (big pic+read)']
         postscript = postscript + [ line(x, -1, h=12) for x in eighths ]
         postscript = postscript + [ line(eighths[0], 0, npoints[0]-eighths[0]) ]
-        postscript = postscript + [ text(eighths[i], 0, letter) for i, letter in enumerate(weekdays) ]
+        postscript = postscript + [ text(eighths[i], 0, letter + themes[i]) for i, letter in enumerate(weekdays) ]
         postscript = postscript + [ line(0, 11, npoints[0]) ]
         postscript = postscript + [ line(0, 12, 7) ]
     else: # old style
@@ -228,12 +214,12 @@ with open(gsfile, 'w') as f:
     postscript = postscript + [ mtext(0, npoints[1] - 9.1, 'past', 6, False), mtext(npoints[0] - 1, npoints[1] - 9.1, 'future', 6) ] #, 6, True, 90
 
     postscript = postscript + [ line(fourths[1], npoints[1] - 14.25, h=2*reviewheight-1.5) ] # vertical
-    postscript = postscript + [ mtext(npoints[0]/2-.5, npoints[1] - 13.75, 'execution', 6), mtext(npoints[0]/2-.5, npoints[1] + reviewheight - 9.5, 'reflection', 6) ]
+    postscript = postscript + [ mtext(npoints[0]/2-2, npoints[1] - 13.75, 'execution', 6), mtext(npoints[0]/2-.5, npoints[1] + reviewheight - 9.5, 'reflection', 6) ]
 
     review = ['what did I complete?', 'what was my best day?', 'biggest time wasters?', "what did I do that I hadn't planned?"]
-    postscript = postscript + [ mtext(0, npoints[1] - 13 + i, t, center = False) for i, t in enumerate(review) ]
+    postscript = postscript + [ mtext(0, npoints[1] - 13.5 + i, t, center = False) for i, t in enumerate(review) ]
 
-    review = ['clear out inbox', 'review meetings/events', 'clear out desktop', 'clear out downloads', 'clear off desk', 'close all laptop tabs', 'close all phone tabs', 'move unfinished todos', 'delete > 2 week todos', 'dump new todos/ideas' ]
+    review = ['clear out inbox', 'clear out desktop', 'clear out downloads', 'clear off desk', 'close all laptop tabs', 'close all phone tabs', 'move unfinished todos', 'delete > 2 week todos', 'dump new todos/ideas', 'check calendar/events' ]
     postscript = postscript + [ b for boxes in [ box(fourths[1], npoints[1] - 15 + i) for i in range(len(review[:reviewheight])) ] for b in boxes ]
     postscript = postscript + [ text(fourths[1] + .6, npoints[1] - 14 + i, t) for i, t in enumerate(review[:reviewheight]) ]
     postscript = postscript + [ b for boxes in [ box(fourths[2], npoints[1] - 15 + i) for i in range(len(review[reviewheight:])) ] for b in boxes ]
@@ -242,8 +228,12 @@ with open(gsfile, 'w') as f:
     review = ['what worked well?', 'where did I get stuck?', 'what did I learn?' , 'did I impact anyone?', "what's on my NOT-do list?"]
     postscript = postscript + [ mtext(0, npoints[1] - 13.5 + reviewheight + 1*i, t, center = False) for i, t in enumerate(review) ]
 
-    review = ['am I making progress on my BHAGs?', 'what would this look like if it was easy?', 'what would make next\nweek a great week?' ]
-    postscript = postscript + [ mtext(fourths[1], npoints[1] - 13.5 + reviewheight + 1.5*i, t, center = False) for i, t in enumerate(review) ]
+    prospect = ['re-visit long-term goals', 'pick <= 3 active projects' ]
+    postscript = postscript + [ b for boxes in [ box(fourths[1 + i], npoints[1] - 10) for i in range(len(prospect)) ] for b in boxes ]
+    postscript = postscript + [ text(fourths[1 + i] + .6, npoints[1] - 9, t) for i, t in enumerate(prospect) ]
+
+    review = ['am I making progress on my BHAGs?', 'what would make next\nweek a great week?' ]
+    postscript = postscript + [ mtext(fourths[1], npoints[1] - 12.5 + reviewheight + 1.5*i, t, center = False) for i, t in enumerate(review) ]
 
     # next week
     postscript = postscript + [ line(x, npoints[1] - 5, h=6) for x in fourths ] + [ line(0, npoints[1] - 2, w = npoints[0]) ] # last is horizontal
