@@ -188,11 +188,11 @@ with open(gsfile, 'w') as f:
   elif args.weekly:
     print('Printing weekly')
     # put binding margin on left instead
-    #postscript = [ f'{args.binding - args.margin[0]/2} 0 translate ' ] + postscript
+    postscript = [ f'{args.binding - args.margin[0]/2} 0 translate ' ] + postscript
 
     # week
     if True:
-        themes = ['', '', '', '', '', ' (rest day)', ' (big pic+read)']
+        themes = ['', '', '', '', '', ' (rest)', ' (reflect+read)']
         postscript = postscript + [ line(x, -1, h=12) for x in eighths ]
         postscript = postscript + [ line(eighths[0], 0, npoints[0]-eighths[0]) ]
         postscript = postscript + [ text(eighths[i], 0, letter + themes[i]) for i, letter in enumerate(weekdays) ]
@@ -219,7 +219,7 @@ with open(gsfile, 'w') as f:
     review = ['what did I complete?', 'what was my best day?', 'biggest time wasters?', "what did I do that I hadn't planned?"]
     postscript = postscript + [ mtext(0, npoints[1] - 13.5 + i, t, center = False) for i, t in enumerate(review) ]
 
-    review = ['clear out inbox', 'clear out desktop', 'clear out downloads', 'clear off desk', 'close all laptop tabs', 'close all phone tabs', 'move unfinished todos', 'delete > 2 week todos', 'dump new todos/ideas', 'check calendar/events' ]
+    review = ['clear out inbox', 'clear out desktop', 'clear out downloads', 'clear off desk', 'close all laptop tabs', 'close all phone tabs', 'move unfinished todos', 'delete > 2 week todos', 'dump new todos/ideas', 'check weekly stats+calendar' ]
     postscript = postscript + [ b for boxes in [ box(fourths[1], npoints[1] - 15 + i) for i in range(len(review[:reviewheight])) ] for b in boxes ]
     postscript = postscript + [ text(fourths[1] + .6, npoints[1] - 14 + i, t) for i, t in enumerate(review[:reviewheight]) ]
     postscript = postscript + [ b for boxes in [ box(fourths[2], npoints[1] - 15 + i) for i in range(len(review[reviewheight:])) ] for b in boxes ]
@@ -228,7 +228,7 @@ with open(gsfile, 'w') as f:
     review = ['what worked well?', 'where did I get stuck?', 'what did I learn?' , 'did I impact anyone?', "what's on my NOT-do list?"]
     postscript = postscript + [ mtext(0, npoints[1] - 13.5 + reviewheight + 1*i, t, center = False) for i, t in enumerate(review) ]
 
-    prospect = ['re-visit long-term goals', 'pick <= 3 active projects' ]
+    prospect = ['check/update long-term goals', 'pick <= 3 active projects' ]
     postscript = postscript + [ b for boxes in [ box(fourths[1 + i], npoints[1] - 10) for i in range(len(prospect)) ] for b in boxes ]
     postscript = postscript + [ text(fourths[1 + i] + .6, npoints[1] - 9, t) for i, t in enumerate(prospect) ]
 
@@ -277,9 +277,9 @@ with open(gsfile, 'w') as f:
     # TODO add boxes
 
     # tasks
-    tasktypes = ['check in/catch up', 'research', 'deep work', 'physical work']
+    tasktypes = ['check in/catch up -> tasks & messages', 'research -> notes', 'dev -> code/docs', 'manual work -> object']
     postscript = postscript + [ text(0, 12+8*i, t, 7) for i, t in enumerate(tasktypes) ]
-    postscript = postscript + [ h for i in range(len(tasktypes)) for h in [line(0, 11+8*i, w=npoints[0] if i == 0 else thirds[0])] + hook(0, 12+8*i, 5 if i == 0 else 3.5) ]
+    postscript = postscript + [ h for i in range(len(tasktypes)) for h in [line(0, 11+8*i, w=npoints[0] if i == 0 else thirds[0])] + hook(0, 12+8*i, 9.3 if i == 0 else 5.5) ]
 
     # day
     postscript = postscript + [ line(thirds[0], 10, h=npoints[1] - 16, dash=False) ] # vertical line
